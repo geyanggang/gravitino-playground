@@ -374,8 +374,8 @@ curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 # Set manager as owner of the metalake
 curl -X PUT -H "Accept: application/vnd.gravitino.v1+json" \
   -H "Content-Type: application/json" \
-  -d '{"name":"manager"}' \
-  http://localhost:8090/api/metalakes/metalake_demo/owners
+  -d '{"name":"manager","type":"USER"}' \
+  http://localhost:8090/api/metalakes/metalake_demo/owners/metalake/metalake_demo
 ```
 
 **Step 3: Create Database and Table with Manager**
@@ -440,6 +440,7 @@ Exit spark-sql and create a role with the necessary privileges:
 # Create role with all required privileges
 curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
   -H "Content-Type: application/json" \
+  -u manager:123 \
   -d '{
     "name": "analyst_role",
     "securableObjects": [
@@ -470,7 +471,9 @@ curl -X POST -H "Accept: application/vnd.gravitino.v1+json" \
 
 # Assign role to user
 curl -X PUT -H "Accept: application/vnd.gravitino.v1+json" \
-  -H "Content-Type: application/json" -d '{
+  -H "Content-Type: application/json" \
+  -u manager:123 \
+  -d '{
     "roleNames": ["analyst_role"]
 }' http://localhost:8090/api/metalakes/metalake_demo/permissions/users/data_analyst/grant
 ```
